@@ -8,7 +8,7 @@ To play a game create a new Indigo instance:
 ```go
 builder := Builder{}
 game, err := builder.Create(&bg.BoardGameOptions{
-    Teams: []string{"TeamA", "TeamB"}, // must contain at least 2 and at most 8 teams
+    Teams: []string{"TeamA", "TeamB"}, // must contain at least 2 and at most 4 teams
     MoreOptions: TsuroMoreOptions{
         Seed: 123, // OPTIONAL - seed used to generate deterministic randomness which defaults to 0
         Variant: "Classic", // OPTIONAL - variants that change the game rules i.e. Classic (default), LargeHands
