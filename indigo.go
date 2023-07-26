@@ -2,7 +2,6 @@ package go_indigo
 
 import (
 	"fmt"
-	"math/rand"
 	"strings"
 
 	"github.com/mitchellh/mapstructure"
@@ -54,7 +53,7 @@ func NewIndigo(options *bg.BoardGameOptions) (*Indigo, error) {
 			Status: bgerr.StatusInvalidOption,
 		}
 	}
-	state, err := newState(options.Teams, rand.New(rand.NewSource(details.Seed)), details.Variant, details.RoundsUntilEnd)
+	state, err := newState(options.Teams, details.Seed, details.Variant, details.RoundsUntilEnd)
 	if err != nil {
 		return nil, &bgerr.Error{
 			Err:    err,
@@ -127,14 +126,26 @@ func (i *Indigo) GetSnapshot(team ...string) (*bg.BoardGameSnapshot, error) {
 		}
 	}
 
+	hands := make(map[string][]tile)
+	for t, hand := range i.state.hands {
+		if len(team) == 0 || (t == team[0]) {
+			hands[t] = hand.GetItems()
+		}
+	}
+
 	return &bg.BoardGameSnapshot{
-		Turn:     i.state.turn,
-		Teams:    i.state.teams,
-		Winners:  i.state.winners,
-		MoreData: nil,
-		Targets:  nil,
-		Actions:  i.actions,
-		Message:  i.state.message(),
+		Turn:    i.state.turn,
+		Teams:   i.state.teams,
+		Winners: i.state.winners,
+		MoreData: IndigoSnapshotData{
+			Board:  i.state.board,
+			Hands:  hands,
+			Points: i.state.points,
+			Round:  i.state.round,
+		},
+		Targets: i.state.targets(),
+		Actions: i.actions,
+		Message: i.state.message(),
 	}, nil
 }
 

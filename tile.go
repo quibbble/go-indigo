@@ -10,7 +10,7 @@ const (
 	D       = "D"
 	E       = "E"
 	F       = "F"
-	Special = "Special" // Special edge represents all edges on the central treature tile
+	Special = "S" // Special edge represents all edges on the central treasure tile
 )
 
 /*
@@ -39,7 +39,7 @@ func newTile(paths string) (*tile, error) {
 		Paths: paths,
 	}
 	for i := 0; i < 3; i++ {
-		if contains(UniqueTiles, t.Paths) {
+		if contains(uniquePaths, t.Paths) {
 			return &tile{
 				Paths:    paths,
 				Treasure: false,
@@ -50,19 +50,19 @@ func newTile(paths string) (*tile, error) {
 	return nil, fmt.Errorf("paths %s are not a valid tile configuration", paths)
 }
 
-func (t *tile) GetDestination(start string) string {
+func (t *tile) GetDestination(startingEdge string) (string, error) {
 	for idx, char := range t.Paths {
-		if string(char) == start && idx%2 == 0 {
-			return string(t.Paths[idx+1])
-		} else if string(char) == start && idx%2 == 1 {
-			return string(t.Paths[idx-1])
+		if string(char) == startingEdge && idx%2 == 0 {
+			return string(t.Paths[idx+1]), nil
+		} else if string(char) == startingEdge && idx%2 == 1 {
+			return string(t.Paths[idx-1]), nil
 		}
 	}
-	return ""
+	return "", fmt.Errorf("no destination found for tile %s with starting edge %s", t.Paths, startingEdge)
 }
 
 func (t *tile) RotateClockwise() {
-	transform := map[string]string{"A": "B", "B": "C", "C": "D", "D": "E", "E": "F", "F": "A"}
+	transform := map[string]string{A: B, B: C, C: D, D: E, E: F, F: A}
 	transformed := ""
 	for _, char := range t.Paths {
 		transformed += transform[string(char)]
@@ -77,15 +77,6 @@ func (t *tile) equals(t2 *tile) bool {
 			return true
 		}
 		copied.RotateClockwise()
-	}
-	return false
-}
-
-func (t *tile) in(list []*tile) bool {
-	for _, t2 := range list {
-		if t.equals(t2) {
-			return true
-		}
 	}
 	return false
 }

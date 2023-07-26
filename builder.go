@@ -22,11 +22,11 @@ func (b *Builder) CreateWithBGN(options *bg.BoardGameOptions) (bg.BoardGameWithB
 
 func (b *Builder) Load(game *bgn.Game) (bg.BoardGameWithBGN, error) {
 	if game.Tags["Game"] != key {
-		return nil, loadFailure(fmt.Errorf("game tag does not match game key"))
+		return nil, errDecoding(fmt.Errorf("game tag does not match game key"))
 	}
 	teamsStr, ok := game.Tags["Teams"]
 	if !ok {
-		return nil, loadFailure(fmt.Errorf("missing teams tag"))
+		return nil, errDecoding(fmt.Errorf("missing teams tag"))
 	}
 	teams := strings.Split(teamsStr, ", ")
 	g, err := b.CreateWithBGN(&bg.BoardGameOptions{
@@ -37,12 +37,12 @@ func (b *Builder) Load(game *bgn.Game) (bg.BoardGameWithBGN, error) {
 	}
 	for _, action := range game.Actions {
 		if action.TeamIndex >= len(teams) {
-			return nil, loadFailure(fmt.Errorf("team index %d out of range", action.TeamIndex))
+			return nil, errDecoding(fmt.Errorf("team index %d out of range", action.TeamIndex))
 		}
 		team := teams[action.TeamIndex]
 		actionType := notationToAction[string(action.ActionKey)]
 		if actionType == "" {
-			return nil, loadFailure(fmt.Errorf("invalid action key %s", string(action.ActionKey)))
+			return nil, errDecoding(fmt.Errorf("invalid action key %s", string(action.ActionKey)))
 		}
 		var details interface{}
 		switch actionType {

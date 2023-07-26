@@ -19,15 +19,15 @@ func (p *PlaceTileActionDetails) encodeBGN() []string {
 
 func decodePlaceTileActionDetailsBGN(notation []string) (*PlaceTileActionDetails, error) {
 	if len(notation) != 3 {
-		return nil, loadFailure(fmt.Errorf("invalid place tile notation"))
+		return nil, errDecoding(fmt.Errorf("invalid place tile notation"))
 	}
 	row, err := strconv.Atoi(notation[0])
 	if err != nil {
-		return nil, loadFailure(err)
+		return nil, errDecoding(err)
 	}
 	column, err := strconv.Atoi(notation[1])
 	if err != nil {
-		return nil, loadFailure(err)
+		return nil, errDecoding(err)
 	}
 	tile := notation[2]
 	return &PlaceTileActionDetails{
@@ -37,7 +37,7 @@ func decodePlaceTileActionDetailsBGN(notation []string) (*PlaceTileActionDetails
 	}, nil
 }
 
-func loadFailure(err error) error {
+func errDecoding(err error) error {
 	return &bgerr.Error{
 		Err:    err,
 		Status: bgerr.StatusBGNDecodingFailure,
