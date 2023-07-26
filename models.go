@@ -21,7 +21,7 @@ type IndigoMoreOptions struct {
 	RoundsUntilEnd int // the number of rounds until the game ends - 0 means infinite
 }
 
-type RotateTileClockwiseActionDetails struct {
+type RotateTileActionDetails struct {
 	Tile string
 }
 

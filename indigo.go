@@ -76,7 +76,7 @@ func (i *Indigo) Do(action *bg.BoardGameAction) error {
 	}
 	switch action.ActionType {
 	case ActionRotateTileClockwise:
-		var details RotateTileClockwiseActionDetails
+		var details RotateTileActionDetails
 		if err := mapstructure.Decode(action.MoreDetails, &details); err != nil {
 			return &bgerr.Error{
 				Err:    err,

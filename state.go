@@ -229,7 +229,7 @@ func (s *state) targets(team ...string) []*bg.BoardGameAction {
 				targets = append(targets, &bg.BoardGameAction{
 					Team:       t,
 					ActionType: ActionRotateTileClockwise,
-					MoreDetails: RotateTileClockwiseActionDetails{
+					MoreDetails: RotateTileActionDetails{
 						Tile: tile.Paths,
 					},
 				})
