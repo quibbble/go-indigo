@@ -143,7 +143,7 @@ func (i *Indigo) GetSnapshot(team ...string) (*bg.BoardGameSnapshot, error) {
 			Points: i.state.points,
 			Round:  i.state.round,
 		},
-		Targets: i.state.targets(),
+		// Targets: i.state.targets(),
 		Actions: i.actions,
 		Message: i.state.message(),
 	}, nil

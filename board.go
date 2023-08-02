@@ -22,7 +22,7 @@ func newBoard(teams []string) *board {
 	columns := minColumns
 	for i := 0; i < rows; i++ {
 		b[i] = make([]*tile, columns)
-		if columns < maxColumns {
+		if i < 4 {
 			columns++
 		} else {
 			columns--

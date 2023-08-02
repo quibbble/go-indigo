@@ -241,7 +241,7 @@ func (s *state) targets(team ...string) []*bg.BoardGameAction {
 		for r, row := range s.board.Tiles {
 			for c, t := range row {
 				if t == nil {
-					for _, tile := range s.hands[team[0]].GetItems() {
+					for _, tile := range s.hands[s.turn].GetItems() {
 						targets = append(targets, &bg.BoardGameAction{
 							Team:       s.turn,
 							ActionType: ActionPlaceTile,
