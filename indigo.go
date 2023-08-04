@@ -53,6 +53,9 @@ func NewIndigo(options *bg.BoardGameOptions) (*Indigo, error) {
 			Status: bgerr.StatusInvalidOption,
 		}
 	}
+	if details.RoundsUntilEnd == 0 {
+		details.RoundsUntilEnd = 999
+	}
 	state, err := newState(options.Teams, details.Seed, details.Variant, details.RoundsUntilEnd)
 	if err != nil {
 		return nil, &bgerr.Error{
@@ -138,12 +141,14 @@ func (i *Indigo) GetSnapshot(team ...string) (*bg.BoardGameSnapshot, error) {
 		Teams:   i.state.teams,
 		Winners: i.state.winners,
 		MoreData: IndigoSnapshotData{
-			Board:  i.state.board,
-			Hands:  hands,
-			Points: i.state.points,
-			Round:  i.state.round,
+			Board:          i.state.board,
+			Hands:          hands,
+			Points:         i.state.points,
+			Round:          i.state.round,
+			RoundsUntilEnd: i.state.roundsUntilEnd,
+			Variant:        i.state.variant,
 		},
-		// Targets: i.state.targets(),
+		Targets: i.state.targets(),
 		Actions: i.actions,
 		Message: i.state.message(),
 	}, nil

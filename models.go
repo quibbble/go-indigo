@@ -18,7 +18,7 @@ var Variants = []string{VariantClassic, VariantLargeHands}
 type IndigoMoreOptions struct {
 	Seed           int64
 	Variant        string
-	RoundsUntilEnd int // the number of rounds until the game ends - 0 means infinite
+	RoundsUntilEnd int // the number of rounds until the game ends
 }
 
 type RotateTileActionDetails struct {
@@ -32,10 +32,12 @@ type PlaceTileActionDetails struct {
 
 // IndigoSnapshotData is the game data unique to Indigo
 type IndigoSnapshotData struct {
-	Board  *board
-	Hands  map[string][]tile
-	Points map[string]int
-	Round  int
+	Board          *board
+	Hands          map[string][]tile
+	Points         map[string]int
+	Round          int
+	RoundsUntilEnd int
+	Variant        string
 }
 
 var (

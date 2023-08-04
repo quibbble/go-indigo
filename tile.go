@@ -38,11 +38,10 @@ func newTile(paths string) (*tile, error) {
 	t := &tile{
 		Paths: paths,
 	}
-	for i := 0; i < 3; i++ {
+	for i := 0; i < 6; i++ {
 		if contains(uniquePaths, t.Paths) {
 			return &tile{
-				Paths:    paths,
-				Treasure: false,
+				Paths: paths,
 			}, nil
 		}
 		t.RotateClockwise()

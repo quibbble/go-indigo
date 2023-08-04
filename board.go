@@ -52,7 +52,7 @@ func newBoard(teams []string) *board {
 }
 
 func (b *board) place(tile *tile, row, col int) error {
-	if row < 0 || col < 0 || row >= rows || col >= len(b.Tiles[rows]) {
+	if row < 0 || col < 0 || row >= rows || col >= len(b.Tiles[row]) {
 		return fmt.Errorf("index out of bounds")
 	}
 	if b.Tiles[row][col] != nil {
@@ -78,17 +78,21 @@ gemsOuter:
 		)
 
 		// case where tile placed adj to middle treasure tile and one gem must be moved
-		if !centerGemMoved && gem.Edge == Special && placedRow >= 0 && placedCol >= 0 {
+		if gem.Edge == Special && !centerGemMoved && placedRow >= 0 && placedCol >= 0 {
 			edgeToRowCol := map[string][2]int{A: {-1, -1}, B: {-1, 0}, C: {0, 1}, D: {1, 1}, E: {1, 0}, F: {0, -1}}
 			edgeToEdge := map[string]string{A: D, B: E, C: F, D: A, E: B, F: C}
 			for edge, loc := range edgeToRowCol {
 				if gem.Row+loc[0] == placedRow &&
-					gem.Row+loc[1] == placedCol {
+					gem.Column+loc[1] == placedCol {
 					adjRow = placedRow
 					adjCol = placedCol
 					adjEdge = edgeToEdge[edge]
 					centerGemMoved = true
+					break
 				}
+			}
+			if !centerGemMoved {
+				continue
 			}
 		}
 
