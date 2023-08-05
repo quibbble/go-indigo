@@ -184,6 +184,7 @@ func (s *state) placeTile(team, paths string, row, col int) error {
 				winners = append(winners, team)
 			} else if points > maxPoints {
 				winners = []string{team}
+				maxPoints = points
 			}
 		}
 		// if tied the player with most points AND gems wins

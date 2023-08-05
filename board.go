@@ -11,6 +11,10 @@ const (
 	maxColumns = 9
 )
 
+var (
+	edgeToEdge = map[string]string{A: D, B: E, C: F, D: A, E: B, F: C}
+)
+
 type board struct {
 	Tiles    [][]*tile // 0,0 is upper left most tile
 	Gateways []*gateway
@@ -44,9 +48,15 @@ func newBoard(teams []string) *board {
 		gateways = append(gateways, newGateway(initGateways[edges], edges, owners...))
 	}
 
+	// create gems
+	gems := make([]*gem, 0)
+	for _, gem := range initGems {
+		gems = append(gems, newGem(gem[0].(string), gem[1].(string), gem[2].(int), gem[3].(int)))
+	}
+
 	return &board{
 		Tiles:    b,
-		Gems:     initGems,
+		Gems:     gems,
 		Gateways: gateways,
 	}
 }
@@ -58,6 +68,17 @@ func (b *board) place(tile *tile, row, col int) error {
 	if b.Tiles[row][col] != nil {
 		return fmt.Errorf("tile already exists at (%d, %d)", row, col)
 	}
+	if len(tile.Paths) != 6 {
+		return fmt.Errorf("invalid tile paths")
+	}
+	paths := []string{tile.Paths[0:2], tile.Paths[2:4], tile.Paths[4:6]}
+	for _, gateway := range b.Gateways {
+		for _, location := range gateway.Locations {
+			if row == location[0] && col == location[1] && contains(paths, gateway.Edges) {
+				return fmt.Errorf("cannot place a tile in a way that blocks a gateway")
+			}
+		}
+	}
 	b.Tiles[row][col] = tile
 	return nil
 }
@@ -66,7 +87,7 @@ func (b *board) moveGems(placedRow, placedCol int) ([]*gem, error) {
 	moved := []*gem{}
 	centerGemMoved := false
 
-gemsOuter:
+nextGem:
 	for _, gem := range b.Gems {
 		if gem.collided || gem.gateway != nil {
 			continue
@@ -78,22 +99,33 @@ gemsOuter:
 		)
 
 		// case where tile placed adj to middle treasure tile and one gem must be moved
-		if gem.Edge == Special && !centerGemMoved && placedRow >= 0 && placedCol >= 0 {
-			edgeToRowCol := map[string][2]int{A: {-1, -1}, B: {-1, 0}, C: {0, 1}, D: {1, 1}, E: {1, 0}, F: {0, -1}}
-			edgeToEdge := map[string]string{A: D, B: E, C: F, D: A, E: B, F: C}
-			for edge, loc := range edgeToRowCol {
-				if gem.Row+loc[0] == placedRow &&
-					gem.Column+loc[1] == placedCol {
-					adjRow = placedRow
-					adjCol = placedCol
-					adjEdge = edgeToEdge[edge]
-					centerGemMoved = true
-					break
+		if gem.Edge == Special {
+			if !centerGemMoved && placedRow >= 0 && placedCol >= 0 {
+				edgeMap := map[string][2]int{
+					"A": {-1, -1},
+					"B": {-1, 0},
+					"C": {0, 1},
+					"D": {1, 0},
+					"E": {1, -1},
+					"F": {0, -1},
 				}
+				for edge, loc := range edgeMap {
+					if gem.Row+loc[0] == placedRow &&
+						gem.Column+loc[1] == placedCol {
+						adjRow = placedRow
+						adjCol = placedCol
+						adjEdge = edgeToEdge[edge]
+						centerGemMoved = true
+						break
+					}
+				}
+				if !centerGemMoved {
+					continue nextGem
+				}
+			} else {
+				continue nextGem
 			}
-			if !centerGemMoved {
-				continue
-			}
+
 		}
 
 		// base case where gem has a adj tile and must be moved
@@ -102,7 +134,7 @@ gemsOuter:
 			if adjRow < 0 || adjRow >= len(b.Tiles) ||
 				adjCol < 0 || adjCol >= len(b.Tiles[adjRow]) ||
 				b.Tiles[adjRow][adjCol] == nil {
-				continue
+				continue nextGem
 			}
 		}
 
@@ -111,7 +143,7 @@ gemsOuter:
 			if g.Row == adjRow && g.Column == adjCol && g.Edge == adjEdge {
 				gem.collided = true
 				g.collided = true
-				continue gemsOuter
+				continue nextGem
 			}
 		}
 
@@ -127,12 +159,12 @@ gemsOuter:
 		moved = append(moved, gem)
 
 		// check for gateway reached
-	gatewayOuter:
+	nextGateway:
 		for _, gateway := range b.Gateways {
 			for _, loc := range gateway.Locations {
 				if loc[0] == gem.Row && loc[1] == gem.Column && strings.Contains(gateway.Edges, gem.Edge) {
 					gem.gateway = gateway
-					break gatewayOuter
+					break nextGateway
 				}
 			}
 		}
@@ -151,9 +183,23 @@ gemsOuter:
 
 // getAdjacent returns the adjacent row, col, and edge
 func (b *board) getAdjacent(row, col int, edge string) (adjRow, adjCol int, adjEdge string) {
-	edgeToRowCol := map[string][2]int{A: {-1, -1}, B: {-1, 0}, C: {0, 1}, D: {1, 1}, E: {1, 0}, F: {0, -1}}
-	edgeToEdge := map[string]string{A: D, B: E, C: F, D: A, E: B, F: C}
-	return row + edgeToRowCol[edge][0], col + edgeToRowCol[edge][1], edgeToEdge[edge]
+	edgeToRowColTop := map[string][2]int{A: {-1, -1}, B: {-1, 0}, C: {0, 1}, D: {1, 1}, E: {1, 0}, F: {0, -1}}
+	edgeToRowColBot := map[string][2]int{A: {-1, 0}, B: {-1, 1}, C: {0, 1}, D: {1, 0}, E: {1, -1}, F: {0, -1}}
+	var edgeMap map[string][2]int
+	if row < rows/2 {
+		edgeMap = edgeToRowColTop
+	} else if row > rows/2 {
+		edgeMap = edgeToRowColBot
+	} else {
+		if strings.Contains("AB", edge) {
+			edgeMap = edgeToRowColTop
+		} else if strings.Contains("DE", edge) {
+			edgeMap = edgeToRowColBot
+		} else {
+			edgeMap = edgeToRowColTop
+		}
+	}
+	return row + edgeMap[edge][0], col + edgeMap[edge][1], edgeToEdge[edge]
 }
 
 func (b *board) gemsInPlay() int {

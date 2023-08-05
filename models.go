@@ -71,19 +71,19 @@ var (
 	}
 
 	// inital gems
-	initGems = []*gem{
-		newGem(Amber, D, 0, 0),
-		newGem(Amber, E, 0, 4),
-		newGem(Amber, F, 4, 8),
-		newGem(Amber, A, 8, 4),
-		newGem(Amber, B, 8, 0),
-		newGem(Amber, C, 4, 0),
-		newGem(Emerald, Special, 4, 4),
-		newGem(Emerald, Special, 4, 4),
-		newGem(Emerald, Special, 4, 4),
-		newGem(Emerald, Special, 4, 4),
-		newGem(Emerald, Special, 4, 4),
-		newGem(Sapphire, Special, 4, 4),
+	initGems = [][4]interface{}{
+		{Amber, D, 0, 0},
+		{Amber, E, 0, 4},
+		{Amber, F, 4, 8},
+		{Amber, A, 8, 4},
+		{Amber, B, 8, 0},
+		{Amber, C, 4, 0},
+		{Emerald, Special, 4, 4},
+		{Emerald, Special, 4, 4},
+		{Emerald, Special, 4, 4},
+		{Emerald, Special, 4, 4},
+		{Emerald, Special, 4, 4},
+		{Sapphire, Special, 4, 4},
 	}
 
 	// map from edges to (row, col) locations of every gateway
