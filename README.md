@@ -2,6 +2,10 @@
 
 Go-indigo is a [Go](https://golang.org) implementation of the board game [Indigo](https://en.wikipedia.org/wiki/Indigo_(board_game)). Please note that this repo only includes game logic and a basic API to interact with the game but does NOT include any form of GUI.
 
+Check out [indigo.quibbble.com](indigo.quibbble.com) if you wish to view and play a live version of this game which utilizes this project along with a separate custom UI.
+
+[![Quibbble Indigo](https://i.imgur.com/VV9pBsF.png)](indigo.quibbble.com)
+
 ## Usage
 
 To play a game create a new Indigo instance:
