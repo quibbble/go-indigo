@@ -2,6 +2,7 @@ package go_indigo
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 
 	bg "github.com/quibbble/go-boardgame"
@@ -29,8 +30,34 @@ func (b *Builder) Load(game *bgn.Game) (bg.BoardGameWithBGN, error) {
 		return nil, errDecoding(fmt.Errorf("missing teams tag"))
 	}
 	teams := strings.Split(teamsStr, ", ")
+	variantStr := game.Tags["Variant"]
+	if !(variantStr == "" || contains(Variants, variantStr)) {
+		return nil, errDecoding(fmt.Errorf("invalid variant value"))
+	}
+	seedStr, ok := game.Tags["Seed"]
+	if !ok {
+		return nil, errDecoding(fmt.Errorf("missing seed tag"))
+	}
+	seed, err := strconv.Atoi(seedStr)
+	if err != nil {
+		return nil, errDecoding(err)
+	}
+	roundsUntilEndStr := game.Tags["RoundsUntilEnd"]
+	var roundsUntilEnd int
+	if roundsUntilEndStr != "" {
+		i, err := strconv.Atoi(roundsUntilEndStr)
+		if err != nil {
+			return nil, errDecoding(err)
+		}
+		roundsUntilEnd = i
+	}
 	g, err := b.CreateWithBGN(&bg.BoardGameOptions{
 		Teams: teams,
+		MoreOptions: IndigoMoreOptions{
+			Seed:           int64(seed),
+			Variant:        variantStr,
+			RoundsUntilEnd: roundsUntilEnd,
+		},
 	})
 	if err != nil {
 		return nil, err
