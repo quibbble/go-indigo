@@ -28,9 +28,9 @@ func newState(teams []string, random int64, variant string, roundsUntilEnd int) 
 	points := make(map[string]int)
 	gemsCount := make(map[string]int)
 	deck := cl.NewCollection[tile](random)
-	for paths, numCopies := range pathsToNumCopies {
+	for idx, numCopies := range numCopiesByUniquePathsIndex {
 		for i := 0; i < numCopies; i++ {
-			deck.Add(tile{Paths: paths})
+			deck.Add(tile{Paths: uniquePaths[idx]})
 		}
 	}
 	deck.Shuffle()

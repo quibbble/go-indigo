@@ -71,7 +71,7 @@ func (t *tile) RotateClockwise() {
 
 func (t *tile) equals(t2 *tile) bool {
 	copied, _ := newTile(t.Paths)
-	for i := 0; i < 3; i++ {
+	for i := 0; i < 5; i++ {
 		if copied.Paths == t2.Paths {
 			return true
 		}

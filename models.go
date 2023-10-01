@@ -51,13 +51,7 @@ var (
 	}
 
 	// map from paths to number of copies
-	pathsToNumCopies = map[string]int{
-		uniquePaths[0]: 6,
-		uniquePaths[1]: 6,
-		uniquePaths[2]: 14,
-		uniquePaths[3]: 14,
-		uniquePaths[4]: 14,
-	}
+	numCopiesByUniquePathsIndex = []int{6, 6, 14, 14, 14}
 
 	// map from treature tile paths to (row, col) location
 	initTreasureTiles = map[string][2]int{
