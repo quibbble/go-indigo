@@ -100,6 +100,7 @@ func (i *Indigo) Do(action *bg.BoardGameAction) error {
 		if err := i.state.placeTile(action.Team, details.Tile, details.Row, details.Column); err != nil {
 			return err
 		}
+		i.actions = append(i.actions, action)
 	case bg.ActionSetWinners:
 		var details bg.SetWinnersActionDetails
 		if err := mapstructure.Decode(action.MoreDetails, &details); err != nil {
