@@ -196,6 +196,7 @@ func (s *state) placeTile(team, paths string, row, col int) error {
 					winners = append(winners, team)
 				} else if gemCount > maxGemCount {
 					winners = []string{team}
+					maxGemCount = gemCount
 				}
 			}
 		}
