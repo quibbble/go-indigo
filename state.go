@@ -189,9 +189,11 @@ func (s *state) placeTile(team, paths string, row, col int) error {
 		}
 		// if tied the player with most points AND gems wins
 		if len(winners) > 1 {
+			possibleWinners := winners
 			winners = make([]string, 0)
 			maxGemCount := 0
-			for team, gemCount := range s.gemsCount {
+			for _, team := range possibleWinners {
+				gemCount := s.gemsCount[team]
 				if gemCount == maxGemCount {
 					winners = append(winners, team)
 				} else if gemCount > maxGemCount {
