@@ -12,13 +12,17 @@ const (
 	VariantLargeHands = "LargeHands" // players have a hand size of 2 instead of 1
 )
 
-var Variants = []string{VariantClassic, VariantLargeHands}
+var variants = []string{VariantClassic, VariantLargeHands}
 
 // IndigoMoreOptions are the additional options for creating a game of Indigo
 type IndigoMoreOptions struct {
 	Seed           int64
 	Variant        string
 	RoundsUntilEnd int // the number of rounds until the game ends
+}
+
+type IndigoMoreInfo struct {
+	Variants []string
 }
 
 type RotateTileActionDetails struct {
